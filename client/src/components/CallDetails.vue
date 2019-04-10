@@ -69,7 +69,7 @@
                           <v-icon v-for="i in call.rate" :key="i.id">grade</v-icon>
                         </template>
                         <template v-else>
-                            Aucune note
+                          Aucune note
                         </template>
                       </v-list-tile-sub-title>
                     </v-list-tile-content>
@@ -291,7 +291,9 @@
     <v-dialog v-model="dialogComments" width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline"><v-icon large class="mr-2">comment</v-icon>Commentaires</span>
+          <span class="headline">
+            <v-icon large class="mr-2">comment</v-icon>Commentaires
+          </span>
         </v-card-title>
         <v-card-text>
           <p class="justify">{{ call.feedbacks || "Aucun commentaire" }}</p>
@@ -299,52 +301,55 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="dialogDiagnostics" max-width="600px">
-      <Diagnostics :codec="call.codec"/>
+      <Diagnostics :codec="call.codec" />
     </v-dialog>
   </v-card>
-  
+
 </template>
 
 <style>
-  code {
-    overflow: scroll;
-  }
-  .justify {
-    text-align: justify;
-    text-justify: inter-word;
-  }
+code {
+  overflow: scroll;
+}
+.justify {
+  text-align: justify;
+  text-justify: inter-word;
+}
 </style>
 
 <script>
-
-import moment from 'moment'
-import Diagnostics from './Diagnostics'
+import moment from "moment";
+import Diagnostics from "./Diagnostics";
 
 export default {
   data() {
     return {
       dialogComments: false,
-      dialogDiagnostics: false,
-    }
+      dialogDiagnostics: false
+    };
   },
-  props: ['call'],
+  props: ["call"],
   components: {
     Diagnostics
   },
   computed: {
-    startCall () {
-      return moment(this.call.callHistory.StartTime).format("dddd Do MMMM YYYY à HH:mm:ss")
+    startCall() {
+      return moment(this.call.callHistory.StartTime).format(
+        "dddd Do MMMM YYYY à HH:mm:ss"
+      );
     },
-    endCall () {
-      return moment(this.call.callHistory.EndTime).format("dddd Do MMMM YYYY à HH:mm:ss")
+    endCall() {
+      return moment(this.call.callHistory.EndTime).format(
+        "dddd Do MMMM YYYY à HH:mm:ss"
+      );
     }
   },
   methods: {
     showComments() {
-      this.dialogComments = true
+      this.dialogComments = true;
     }
   }
-}
+};
 </script>
 
 

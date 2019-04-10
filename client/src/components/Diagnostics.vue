@@ -18,13 +18,6 @@
                   <v-list-tile-sub-title>{{ codec.productType }}</v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
-              <v-divider></v-divider>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Firmware</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ codec.firmware}}</v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
             </v-list>
           </v-flex>
           <v-flex md6 sm6 xs12>
@@ -40,13 +33,6 @@
                 <v-list-tile-content>
                   <v-list-tile-title>Adresse MAC</v-list-tile-title>
                   <v-list-tile-sub-title>{{ codec.macAddress}}</v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-divider></v-divider>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>URI</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ codec.uri}}</v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -83,7 +69,9 @@
                         <v-flex xs12 v-for="item in errors" :key="item.id">
                           <v-card color="error" class="white--text">
                             <v-card-title>
-                              <h1 class="title d-flex align-center"><v-icon dark>error</v-icon>&nbsp;&nbsp;{{ item.Type }}</h1>
+                              <h1 class="title d-flex align-center">
+                                <v-icon dark>error</v-icon>&nbsp;&nbsp;{{ item.Type }}
+                              </h1>
                             </v-card-title>
                             <v-card-text>
                               <h2 class="subheading" v-if="item.Description">{{ item.Description }}</h2>
@@ -105,7 +93,9 @@
                         <v-flex xs12 v-for="item in warnings" :key="item.id">
                           <v-card color="warning">
                             <v-card-title>
-                              <h1 class="title d-flex align-center"><v-icon>warning</v-icon>&nbsp;&nbsp;{{ item.Type }}</h1>
+                              <h1 class="title d-flex align-center">
+                                <v-icon>warning</v-icon>&nbsp;&nbsp;{{ item.Type }}
+                              </h1>
                             </v-card-title>
                             <v-card-text>
                               <h2 class="subheading" v-if="item.Description">{{ item.Description }}</h2>
@@ -127,7 +117,9 @@
                         <v-flex xs12 v-for="item in infos" :key="item.id">
                           <v-card color="info" class="white--text">
                             <v-card-title>
-                              <h1 class="title d-flex align-center"><v-icon dark>info</v-icon>&nbsp;&nbsp;{{ item.Type }}</h1>
+                              <h1 class="title d-flex align-center">
+                                <v-icon dark>info</v-icon>&nbsp;&nbsp;{{ item.Type }}
+                              </h1>
                             </v-card-title>
                             <v-card-text>
                               <h2 class="subheading" v-if="item.Description">{{ item.Description }}</h2>
@@ -149,7 +141,9 @@
                         <v-flex xs12 v-for="item in success" :key="item.id">
                           <v-card color="success" class="white--text">
                             <v-card-title>
-                              <h1 class="title d-flex align-center"><v-icon dark>check_circle</v-icon>&nbsp;&nbsp;{{ item.Type }}</h1>
+                              <h1 class="title d-flex align-center">
+                                <v-icon dark>check_circle</v-icon>&nbsp;&nbsp;{{ item.Type }}
+                              </h1>
                             </v-card-title>
                           </v-card>
                         </v-flex>
@@ -167,79 +161,79 @@
 </template>
 
 <script>
+import VueJsonPretty from "vue-json-pretty";
 
-import VueJsonPretty from 'vue-json-pretty'
+import moment from "moment";
 
-import moment from 'moment'
-
-import Api from '@/services/Api'
+import Api from "@/services/Api";
 
 export default {
   data() {
     return {
       errors: [],
       warnings: [],
-      infos: [], 
+      infos: [],
       success: [],
       refreshingData: false
-    }
+    };
   },
   components: {
     VueJsonPretty
   },
-  props: ['codec'],
+  props: ["codec"],
   computed: {
-    urlCodec () {
-      return 'http://' + this.codec.ipAddress 
+    urlCodec() {
+      return "http://" + this.codec.ipAddress;
     }
   },
-  created () {
-    this.getDiagnostics()
+  created() {
+    this.getDiagnostics();
   },
   watch: {
-    codec (val) {
-      this.getDiagnostics()
+    codec(val) {
+      this.getDiagnostics();
     }
   },
   methods: {
-    getDiagnostics () {
-      Api().get('codec/diagnostics/' + this.codec.macAddress)
+    getDiagnostics() {
+      Api()
+        .get("codec/diagnostics/" + this.codec.macAddress)
         .then(response => {
-          this.parseDiagnostics(response.data.Message)
+          this.parseDiagnostics(response.data.Message);
         })
         .catch(e => {
-          console.log(e)
-        })
+          console.log(e);
+        });
     },
-    parseDiagnostics (diagnostics) {
-      this.errors = []
-      this.warnings = []
-      this.infos = []
-      this.success = []
+    parseDiagnostics(diagnostics) {
+      this.errors = [];
+      this.warnings = [];
+      this.infos = [];
+      this.success = [];
 
       for (var element in diagnostics) {
-        switch(diagnostics[element].Level) {
-          case 'Error':
-            this.errors.push(diagnostics[element])
-          break;
-          case 'Warning':
-            this.warnings.push(diagnostics[element])
-          break;
-          case 'Info':
-            this.infos.push(diagnostics[element])
-          break;
-          case 'OK':
-            this.success.push(diagnostics[element])
-          break;
+        switch (diagnostics[element].Level) {
+          case "Error":
+            this.errors.push(diagnostics[element]);
+            break;
+          case "Warning":
+            this.warnings.push(diagnostics[element]);
+            break;
+          case "Info":
+            this.infos.push(diagnostics[element]);
+            break;
+          case "OK":
+            this.success.push(diagnostics[element]);
+            break;
         }
       }
     }
   }
-}
+};
 </script>
 
 <style>
-  .expansion-panel__body .card {
-    border-radius: 2px !important;
-  }
+.expansion-panel__body .card {
+  border-radius: 2px !important;
+}
 </style>

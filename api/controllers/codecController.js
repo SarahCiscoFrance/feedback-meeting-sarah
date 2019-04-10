@@ -1,6 +1,7 @@
-var mongoose = require('mongoose')
-var Codec = mongoose.model('Codecs')
-var jsxapi = require('jsxapi')
+var mongoose = require("mongoose");
+var Codec = mongoose.model("Codecs");
+var jsxapi = require("jsxapi");
+var request = require("request");
 
 exports.createACodec = (req, res) => {
   var newCodec = new Codec({
@@ -14,89 +15,104 @@ exports.createACodec = (req, res) => {
     uri: req.body.uri,
     error: false,
     messageError: null
-  })
+  });
 
   newCodec.save((err, call) => {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
-    res.json(call)
-  })
-}
+    res.json(call);
+  });
+};
 
 exports.updateCodec = (req, res) => {
-  Codec.findById(req.body._id, function (err, codec) {
+  Codec.findById(req.body._id, function(err, codec) {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
 
-    codec.systemName = req.body.systemName
-    codec.macAddress = req.body.macAddress
-    codec.ipAddress = req.body.ipAddress
-    codec.productType = req.body.productType
-    codec.username = req.body.username
-    codec.password = req.body.password
-    codec.firmware = req.body.firmware
-    codec.uri = req.body.uri
-    codec.error = req.body.error
-    codec.messageError = req.body.messageError
+    codec.systemName = req.body.systemName;
+    codec.macAddress = req.body.macAddress;
+    codec.ipAddress = req.body.ipAddress;
+    codec.productType = req.body.productType;
+    codec.username = req.body.username;
+    codec.password = req.body.password;
+    codec.firmware = req.body.firmware;
+    codec.uri = req.body.uri;
+    codec.error = req.body.error;
+    codec.messageError = req.body.messageError;
 
-    codec.save(function (err, updatedCodec) {
+    codec.save(function(err, updatedCodec) {
       if (err) {
-        res.send(err)
+        res.send(err);
       }
-      res.send(updatedCodec)
-    })
-  })
-}
+      res.send(updatedCodec);
+    });
+  });
+};
 
 exports.deleteCodec = (req, res) => {
-  var id = req.params.id
+  var id = req.params.id;
 
-  Codec.deleteOne({'_id': id}, function (err) {
+  Codec.deleteOne({ _id: id }, function(err) {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
 
-    res.sendStatus(200)
-  })
-}
+    res.sendStatus(200);
+  });
+};
 
 exports.getOneCodec = (req, res) => {
-  Codec.findOne({'macAddress': req.params.mac}, function (err, codec) {
+  Codec.findOne({ macAddress: req.params.mac }, function(err, codec) {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
-    res.json(codec)
-  })
-}
+    res.json(codec);
+  });
+};
 
 exports.getCodecs = (req, res) => {
-  Codec.find({}, function (err, codecs) {
+  Codec.find({}, function(err, codecs) {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
-    res.json(codecs)
-  })
-}
+    res.json(codecs);
+  });
+};
 
 exports.getDiagnostics = (req, res) => {
-  Codec.findOne({'macAddress': req.params.mac}, function (err, codec) {
-    if (err) {
-      res.send(err)
+  var options = {
+    method: "GET",
+    url: process.env.codecsManagerAPI + "/codecs/mac/" + req.params.mac
+  };
+
+  request(options, function(error, response, body) {
+    if (error) {
+      res.send(error);
     }
 
-    const xapi = jsxapi.connect('ssh://' + codec.ipAddress, {
-      username: codec.username,
-      password: codec.password
-    })
+    var codec = JSON.parse(body).codec;
 
-    xapi.command('Diagnostics Run', {
-      ResultSet: 'All'
-    }).then((diagnostics) => {
-      res.json(diagnostics)
-    }).catch(function (error) {
-      console.error(error)
-    })
-  })
-}
+    if (codec) {
+      const xapi = jsxapi.connect(
+        "ssh://" + codec.ip,
+        {
+          username: codec.login,
+          password: codec.password
+        }
+      );
+
+      xapi
+        .command("Diagnostics Run", {
+          ResultSet: "All"
+        })
+        .then(diagnostics => {
+          res.json(diagnostics);
+        })
+        .catch(function(error) {
+          res.send(error);
+        });
+    }
+  });
+};

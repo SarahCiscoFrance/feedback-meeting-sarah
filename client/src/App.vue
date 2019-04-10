@@ -13,7 +13,7 @@
         </v-date-picker>
       </v-menu>
       <v-spacer></v-spacer>
-      <v-btn @click="dialogAdmin = true" color="teal" class="mr-3">Admin</v-btn>
+      <!-- <v-btn @click="dialogAdmin = true" color="teal" class="mr-3">Admin</v-btn> -->
       <v-btn @click="dialogCalls = true" color="teal" class="mr-3">Liste des Appels</v-btn>
       <v-toolbar-items>
         <v-btn flat @click="goToGitHub">Github Repo</v-btn>
@@ -32,15 +32,15 @@
             scrollable>
             <Calls :calls="originalCalls" v-on:dialogCalls="dialogCallsCloseEvent"/>
           </v-dialog>
-          <v-dialog v-model="dialogAdmin" 
+          <!-- <v-dialog v-model="dialogAdmin" 
             fullscreen
             transition="dialog-bottom-transition"
             :overlay="false"
             scrollable>
             <Admin :codecs="codecs" v-on:dialogAdmin="dialogAdminCloseEvent" v-on:refreshCodecs="refreshCodecs"/>
-          </v-dialog>
+          </v-dialog> -->
           <v-flex md6 xs12 class="pa-0">
-            <v-layout column class="ma-0">
+            <v-layout column class="ma-0 fill-height">
               <GlobalInfo :dateFormat="dateFormat" :date="date" :calls="calls"/>
               <Chart :dateFormat="dateFormat" :date="date" :calls="calls" v-on:handleClickOnChart="handleClickOnChartEvent"/>
             </v-layout>
@@ -81,7 +81,7 @@ import GlobalInfo from "./components/GlobalInfo";
 import CallDetails from "./components/CallDetails";
 import Chart from "./components/Chart";
 import Calls from "./components/Calls";
-import Admin from "./components/Admin";
+// import Admin from "./components/Admin";
 import Api from "./services/Api";
 
 import moment from "moment";
@@ -93,14 +93,14 @@ export default {
       dialogCallDetails: false,
       dialogDiagnostics: false,
       dialogCalls: false,
-      dialogAdmin: false,
+      // dialogAdmin: false,
       date: null,
       dateFormat: null,
       menu: false,
       calls: [],
       originalCalls: [],
-      callSelected: null,
-      codecs: []
+      callSelected: null
+      // codecs: []
     };
   },
   name: "App",
@@ -109,8 +109,8 @@ export default {
     GlobalInfo,
     CallDetails,
     Chart,
-    Calls,
-    Admin
+    Calls
+    // Admin
   },
   created() {
     this.date = moment().format("YYYY-MM");
@@ -126,13 +126,13 @@ export default {
     dialogCallsCloseEvent() {
       this.dialogCalls = false;
     },
-    dialogAdminCloseEvent() {
-      this.dialogAdmin = false;
-    },
+    // dialogAdminCloseEvent() {
+    //   this.dialogAdmin = false;
+    // },
     handleClickOnChartEvent(index) {
       if (index != -1) {
         this.calls = this.calls.filter(function(call) {
-          return call.rate === index + 1;
+          return call.rate === index;
         });
       } else {
         this.calls = this.originalCalls;
@@ -181,14 +181,14 @@ export default {
         console.log(e);
       });
 
-    Api()
+    /* Api()
       .get("codec")
       .then(response => {
         this.codecs = response.data;
       })
       .catch(e => {
         console.log(e);
-      });
+      }); */
   }
 };
 </script>

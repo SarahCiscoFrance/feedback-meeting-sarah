@@ -26,7 +26,7 @@
                   <v-list-tile-sub-title>{{ mostUsedCodec || "Aucune donnée" }}</v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
-              </v-list>
+            </v-list>
           </v-flex>
           <v-flex md6 sm6 xs12>
             <v-list two-line>
@@ -74,90 +74,91 @@
 </template>
 
 <script>
-import moment from 'moment'
+import moment from "moment";
 
 export default {
-  data () {
-    return {
-
-    }
+  data() {
+    return {};
   },
-  props: ['date', 'dateFormat', 'calls'],
+  props: ["date", "dateFormat", "calls"],
   computed: {
-    totalCalls () {
-      return this.getCallsOfTheMonth().length
+    totalCalls() {
+      return this.getCallsOfTheMonth().length;
     },
-    averageDuration () {
-      var callsMonth = this.getCallsOfTheMonth()
+    averageDuration() {
+      var callsMonth = this.getCallsOfTheMonth();
 
-      var totalDuration = 0
+      var totalDuration = 0;
 
       for (var call in callsMonth) {
-        totalDuration += parseInt(callsMonth[call].callHistory.Duration)
+        totalDuration += parseInt(callsMonth[call].callHistory.Duration);
       }
-      
-      return Math.floor(totalDuration / callsMonth.length)
-    },
-    mostUsedCodec () {
-      var callsMonth = this.getCallsOfTheMonth()
 
-      var codecs = []
+      return Math.floor(totalDuration / callsMonth.length);
+    },
+    mostUsedCodec() {
+      var callsMonth = this.getCallsOfTheMonth();
+
+      var codecs = [];
 
       for (var call in callsMonth) {
-        var codec = callsMonth[call].codec.systemName
+        var codec = callsMonth[call].codec.name;
 
         if (!codecs[codec]) {
-          codecs[codec] = 1
+          codecs[codec] = 1;
         } else {
-          codecs[codec] += 1
+          codecs[codec] += 1;
         }
       }
 
-      var codecMostUsed = null
-      var nbCalls = null
+      var codecMostUsed = null;
+      var nbCalls = null;
 
       for (var codec in codecs) {
-        var currentNbCalls = codecs[codec]
+        var currentNbCalls = codecs[codec];
 
         if (!codecMostUsed) {
-          codecMostUsed = codec
-          nbCalls = currentNbCalls
+          codecMostUsed = codec;
+          nbCalls = currentNbCalls;
         } else if (currentNbCalls > nbCalls) {
-          codecMostUsed = codec
-          nbCalls = currentNbCalls
+          codecMostUsed = codec;
+          nbCalls = currentNbCalls;
         }
       }
 
-      return codecMostUsed
+      return codecMostUsed;
     },
-    averageRate () {
-      var callsMonth = this.getCallsOfTheMonth()
+    averageRate() {
+      var callsMonth = this.getCallsOfTheMonth();
 
-      var totalRate = 0
-      var nbRatings = 0
+      var totalRate = 0;
+      var nbRatings = 0;
 
       for (var call in callsMonth) {
         if (callsMonth[call].rate) {
-          nbRatings++
-          totalRate += callsMonth[call].rate
+          nbRatings++;
+          totalRate += callsMonth[call].rate;
         }
       }
 
-      return Math.floor(totalRate / nbRatings)
+      return Math.floor(totalRate / nbRatings);
     }
   },
   methods: {
-    getCallsOfTheMonth () {
+    getCallsOfTheMonth() {
       if (this.calls) {
-        var parent = this
+        var parent = this;
 
         return parent.calls.filter(function(call) {
-          return moment(parent.date).format('MM') === moment(call.callHistory.StartTime).format('MM')
-        })
+          return (
+            moment(parent.date).format("MM") ===
+            moment(call.callHistory.StartTime).format("MM")
+          );
+        });
       }
 
-      return []
+      return [];
     }
-  } 
-}
+  }
+};
 </script>

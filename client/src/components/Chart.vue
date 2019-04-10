@@ -73,14 +73,14 @@ export default {
     updateData () {
       var callsMonth = this.getCallsOfTheMonth()
 
-      var rates = [0, 0, 0, 0, 0]
+      var rates = [0, 0, 0, 0, 0, 0]
       var totalRate = 0
 
       for (var call in callsMonth) {
         var rate = callsMonth[call].rate
 
         if (rate !== undefined) {
-          rates[rate - 1] += 1
+          rates[rate] += 1
           totalRate += 1
         }
       }
@@ -90,10 +90,11 @@ export default {
       }
 
       this.datacollection = {
-        labels: ["1 étoile", "2 étoiles", "3 étoiles", "4 étoiles", "5 étoiles"],
+        labels: ["Non noté", "1 étoile", "2 étoiles", "3 étoiles", "4 étoiles", "5 étoiles"],
         datasets: [{
           data: rates,
           backgroundColor: [
+            "rgba(158,158,158,0.7)",
             "rgba(244,67,54,0.7)",
             "rgba(255,152,0,0.7)",
             "rgba(255,235,59,0.7)",
