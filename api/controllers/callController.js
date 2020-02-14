@@ -2,13 +2,8 @@ var mongoose = require("mongoose");
 var Call = mongoose.model("Calls");
 
 exports.createACall = (req, res, io) => {
-  req.body.codec.ipAddress = req.body.codec.ip;
-  req.body.codec.macAddress = req.body.codec.mac;
-  req.body.codec.productType = req.body.codec.type;
-  req.body.codec.systemName = req.body.codec.name;
-
   var newCall = new Call({
-    callHistory: req.body.Entry[0],
+    callHistory: req.body.callHistoryData.Entry[0],
     codec: req.body.codec,
     rate: req.body.rate,
     feedbacks: req.body.feedbacks

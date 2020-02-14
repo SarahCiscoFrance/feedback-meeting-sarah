@@ -95,22 +95,21 @@ exports.getDiagnostics = (req, res) => {
     var codec = JSON.parse(body).codec;
 
     if (codec) {
-      const xapi = jsxapi.connect(
-        "ssh://" + codec.ip,
-        {
-          username: codec.login,
-          password: codec.password
-        }
-      );
+      const xapi = jsxapi.connect("ssh://" + codec.ip, {
+        username: codec.login,
+        password: codec.password
+      });
 
       xapi
         .command("Diagnostics Run", {
           ResultSet: "All"
         })
         .then(diagnostics => {
+          console.log(diagnostics);
           res.json(diagnostics);
         })
         .catch(function(error) {
+          console.log(error);
           res.send(error);
         });
     }

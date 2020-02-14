@@ -1,36 +1,90 @@
 <template>
   <v-app>
-    <v-toolbar app dark color="primary">
+    <v-toolbar
+      app
+      dark
+      color="primary"
+    >
       <v-icon medium>comment</v-icon>
       <v-toolbar-title v-text="title"></v-toolbar-title>
-      <v-menu ref="menu" lazy :close-on-content-click="false" v-model="menu" transition="slide-y-transition"
-        offset-y full-width :return-value.sync="date">
-        <v-btn color="success" slot="activator">{{ dateFormat}}</v-btn>
-        <v-date-picker type="month" v-model="date" locale="fr" no-title scrollable>
+      <v-menu
+        ref="menu"
+        lazy
+        :close-on-content-click="false"
+        v-model="menu"
+        transition="slide-y-transition"
+        offset-y
+        full-width
+        :return-value.sync="date"
+      >
+        <v-btn
+          color="success"
+          slot="activator"
+        >{{ dateFormat}}</v-btn>
+        <v-date-picker
+          type="month"
+          v-model="date"
+          locale="fr"
+          no-title
+          scrollable
+        >
           <v-spacer></v-spacer>
-          <v-btn flat color="primary" @click="menu = false">Annuler</v-btn>
-          <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+          <v-btn
+            flat
+            color="primary"
+            @click="menu = false"
+          >Annuler</v-btn>
+          <v-btn
+            flat
+            color="primary"
+            @click="$refs.menu.save(date)"
+          >OK</v-btn>
         </v-date-picker>
       </v-menu>
       <v-spacer></v-spacer>
       <!-- <v-btn @click="dialogAdmin = true" color="teal" class="mr-3">Admin</v-btn> -->
-      <v-btn @click="dialogCalls = true" color="teal" class="mr-3">Liste des Appels</v-btn>
+      <v-btn
+        @click="dialogCalls = true"
+        color="teal"
+        class="mr-3"
+      >Liste des Appels</v-btn>
       <v-toolbar-items>
-        <v-btn flat @click="goToGitHub">Github Repo</v-btn>
+        <v-btn
+          flat
+          @click="goToGitHub"
+        >Github Repo</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
-      <v-container fluid grid-list-lg fill-height>
-        <v-layout row wrap>
-          <v-dialog v-model="dialogCallDetails" max-width="1300px">
-            <CallDetails :call="callSelected" v-if="callSelected"/>
+      <v-container
+        fluid
+        grid-list-lg
+        fill-height
+      >
+        <v-layout
+          row
+          wrap
+        >
+          <v-dialog
+            v-model="dialogCallDetails"
+            max-width="1300px"
+          >
+            <CallDetails
+              :call="callSelected"
+              v-if="callSelected"
+            />
           </v-dialog>
-          <v-dialog v-model="dialogCalls" 
+          <v-dialog
+            v-model="dialogCalls"
             fullscreen
             transition="dialog-bottom-transition"
             :overlay="false"
-            scrollable>
-            <Calls :calls="originalCalls" v-on:dialogCalls="dialogCallsCloseEvent"/>
+            scrollable
+          >
+            <Calls
+              :calls="originalCalls"
+              v-on:dialogCalls="dialogCallsCloseEvent"
+            />
           </v-dialog>
           <!-- <v-dialog v-model="dialogAdmin" 
             fullscreen
@@ -39,18 +93,41 @@
             scrollable>
             <Admin :codecs="codecs" v-on:dialogAdmin="dialogAdminCloseEvent" v-on:refreshCodecs="refreshCodecs"/>
           </v-dialog> -->
-          <v-flex md6 xs12 class="pa-0">
-            <v-layout column class="ma-0 fill-height">
-              <GlobalInfo :dateFormat="dateFormat" :date="date" :calls="calls"/>
-              <Chart :dateFormat="dateFormat" :date="date" :calls="calls" v-on:handleClickOnChart="handleClickOnChartEvent"/>
+          <v-flex
+            md6
+            xs12
+            class="pa-0"
+          >
+            <v-layout
+              column
+              class="ma-0 fill-height"
+            >
+              <GlobalInfo
+                :dateFormat="dateFormat"
+                :date="date"
+                :calls="calls"
+              />
+              <Chart
+                :dateFormat="dateFormat"
+                :date="date"
+                :calls="calls"
+                v-on:handleClickOnChart="handleClickOnChartEvent"
+              />
             </v-layout>
           </v-flex>
-          <v-flex md6 xs12>
-            <Calendar :date="date" v-on:eventSelected="handleEvent" :calls="calls"/>
+          <v-flex
+            md6
+            xs12
+          >
+            <Calendar
+              :date="date"
+              v-on:eventSelected="handleEvent"
+              :calls="calls"
+            />
           </v-flex>
         </v-layout>
       </v-container>
-    </v-content> 
+    </v-content>
   </v-app>
 </template>
 
@@ -173,9 +250,12 @@ export default {
   mounted() {
     Api()
       .get("call")
-      .then(response => {
-        this.calls = response.data;
-        this.originalCalls = response.data;
+      .then(async response => {
+        //console.log(response.data); içi les données récupérer sont dupliqués
+        //Içi on récupère tous les appels passés
+        var tab = await resolve(response.data);
+        this.calls = tab;
+        this.originalCalls = tab;
       })
       .catch(e => {
         console.log(e);
@@ -191,4 +271,17 @@ export default {
       }); */
   }
 };
+function resolve(data) {
+  return new Promise(resolve => {
+    var ids = [];
+    var finalData = [];
+    data.forEach(element => {
+      if (!ids.includes(element.callHistory.StartTime)) {
+        finalData.push(element);
+        ids.push(element.callHistory.StartTime);
+      }
+    });
+    resolve(finalData);
+  });
+}
 </script>
