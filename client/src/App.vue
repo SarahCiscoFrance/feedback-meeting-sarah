@@ -216,7 +216,7 @@ export default {
       }
     },
     goToGitHub() {
-      window.open("https://github.com/tloyau/feedback-meeting", "_blank");
+      window.open("https://github.com/SarahCiscoFrance/feedback-meeting-sarah", "_blank");
     },
     refreshCodecs() {
       Api()
